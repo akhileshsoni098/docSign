@@ -1,0 +1,57 @@
+=================== Broker - Policy - Signed Customer Management System Update ==============
+
+Hello Sir,
+
+Current project development update:
+
+Completed backend architecture for the Broker - Policy - Signed Customer Management System using Nuxt 4, Nitro Server, MongoDB, and TypeScript.
+
+Modules completed so far:
+
+1. Broker Authentication  (auth) done 
+
+ Broker Register API
+ Broker Login API
+ JWT Token Authentication
+ Protected Middleware Routes
+
+2. Customer Management CRUD  (broker will fill customer details) done
+
+ Create Customer
+ Get All Customers
+ Get Single Customer
+ Update Customer
+ Delete Customer
+
+3. Policy Management CRUD  (by broker authentication/ authorization ) done
+
+ Create Policy
+ Get All Policies
+ Get Single Policy
+ Update Policy
+ Delete Policy
+
+5. Database Architecture Refined  (improved sir) done 
+
+---------------------------------  In Progress ----------------------
+In progress:-
+
+Policy Assignment Flow   
+
+Signing Workflow
+
+File Upload Integration
+
+Tech Stack:
+
+ Nuxt 4
+ Nitro Server
+ MongoDB
+ Mongoose
+ TypeScript
+ JWT
+ Cloudinary
+
+Project structure and API architecture are now in development.
+
+Thank you sir
