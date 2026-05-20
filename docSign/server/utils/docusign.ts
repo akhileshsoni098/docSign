@@ -139,34 +139,28 @@ import docusign from "docusign-esign";
 import fs from "fs";
 import path from "path";
 
-export const getDocusignAccessToken =
-  async () => {
+export const getDocusignAccessToken = async () => {
+  const config = useRuntimeConfig();
 
-    const config =
-      useRuntimeConfig();
+  let privateKey: string | Buffer;
 
-    const privateKey =
-      fs.readFileSync(
-        path.resolve(
-          "server/certs/private.key"
-        )
-      );
+  try {
+    privateKey = fs.readFileSync(path.resolve("server/certs/private.key"));
+  } catch {
+    privateKey = config.docusignPrivateKey.replace(/\\n/g, "\n");
+  }
 
-    const apiClient =
-      new docusign.ApiClient();
+  const apiClient = new docusign.ApiClient();
 
-    apiClient.setOAuthBasePath(
-      config.docusignAuthServer
-    );
+  apiClient.setOAuthBasePath(config.docusignAuthServer);
 
-    const results =
-      await apiClient.requestJWTUserToken(
-        config.docusignIntegrationKey,
-        config.docusignUserId,
-        "signature impersonation",
-        privateKey,
-        3600
-      );
+  const results = await apiClient.requestJWTUserToken(
+    config.docusignIntegrationKey,
+    config.docusignUserId,
+    "signature impersonation",
+    privateKey,
+    3600,
+  );
 
-    return results.body.access_token;
-  };
+  return results.body.access_token;
+};
