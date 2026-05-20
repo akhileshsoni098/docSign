@@ -42,7 +42,7 @@ export const createPolicyService = async (
     });
   }
 
-  const uploadResult = await uploadSingleFile(pdfFile, "policy_pdfs", "raw");
+  const uploadResult = await uploadSingleFile(pdfFile, "policy_pdfs", "auto");
 
   if (!uploadResult.status || !uploadResult.data) {
     throw createError({
@@ -130,7 +130,7 @@ export const updatePolicyService = async (
       });
     }
 
-    const uploadResult = await uploadSingleFile(pdfFile, "policy_pdfs", "raw");
+    const uploadResult = await uploadSingleFile(pdfFile, "policy_pdfs", "auto");
 
     if (!uploadResult.status || !uploadResult.data) {
       throw createError({
