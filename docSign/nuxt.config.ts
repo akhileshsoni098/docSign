@@ -9,7 +9,11 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     jwtSecret: process.env.JWT_SECRET,
-
-    public: {},
+    cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME,
+    cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+    cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET,
+     public: {
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || "http://localhost:3000",
+    },
   },
 })

@@ -45,7 +45,12 @@ export const brokerRegisterService = async (body: IBroker) => {
     success: true,
     message: "Broker registered successfully",
     token,
-    broker,
+    broker:{
+      _id:broker._id,
+      name:broker.name,
+      email:broker.email,
+      role:broker.role
+    },
   };
 };
 
@@ -84,6 +89,11 @@ export const brokerLoginService = async (email: string, password: string) => {
     success: true,
     message: "Broker login successful",
     token,
-    broker,
+    broker:{
+      _id:broker._id,
+      name:broker.name,
+      email:broker.email,
+      role:broker.role
+    },
   };
 };

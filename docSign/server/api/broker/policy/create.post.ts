@@ -1,22 +1,48 @@
+import { defineEventHandler, readMultipartFormData } from "h3";
+
 import { createPolicyService } from "~~/server/services/policy/policy.service";
 import { handleError, handleErrorCatch } from "~~/server/utils/errorHandler";
 import type { ICreatePolicy } from "~~/server/types/policy.types";
+import { IBroker, IResBroker } from "~~/server/types/brokerProfileTypes";
+import type { MultiPartData } from "h3";
 
 export default defineEventHandler(async (event) => {
   try {
-    const body = (await readBody(event)) as ICreatePolicy;
+    const formData = await readMultipartFormData(event);
 
-    if (!body.title || body.premium === undefined || !body.coverage || !body.duration || !body.brokerId) {
-      return handleError(event, 400, "Provide policy details");
+    const body: Record<string, string> = {};
+
+    const files: Record<string, MultiPartData[]> = {};
+
+    for (const item of formData || []) {
+      if (!item.name) {
+        continue;
+      }
+
+      if (item.filename) {
+        if (!files[item.name]) {
+          files[item.name] = [];
+        }
+
+        files[item.name]?.push(item);
+      } else {
+        body[item.name] = item.data.toString();
+      }
     }
 
-    return await createPolicyService(body);
+    const broker = event.context.broker as IResBroker;
 
-    
+    return await createPolicyService(
+      body as unknown as ICreatePolicy,
+      broker._id.toString(),
+      files,
+    );
   } catch (err: unknown) {
     if (err instanceof Error) {
       const statusCode =
-        "statusCode" in err ? Number((err as Error & { statusCode?: number }).statusCode) : 500;
+        "statusCode" in err
+          ? Number((err as Error & { statusCode?: number }).statusCode)
+          : 500;
       return handleErrorCatch(statusCode, err.message);
     }
 

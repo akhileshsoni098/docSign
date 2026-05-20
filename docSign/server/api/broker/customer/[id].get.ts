@@ -1,14 +1,20 @@
+import { ObjectId } from "mongoose";
 import { getCustomerByIdService } from "~~/server/services/customer/customer.service";
 import { handleErrorCatch } from "~~/server/utils/errorHandler";
 
 export default defineEventHandler(async (event) => {
   try {
     const id = getRouterParam(event, "id") as string;
-    return await getCustomerByIdService(id);
+
+    const brokerId = event.context.broker._id as string | ObjectId;
+
+    return await getCustomerByIdService(id, brokerId);
   } catch (err: unknown) {
     if (err instanceof Error) {
       const statusCode =
-        "statusCode" in err ? Number((err as Error & { statusCode?: number }).statusCode) : 500;
+        "statusCode" in err
+          ? Number((err as Error & { statusCode?: number }).statusCode)
+          : 500;
       return handleErrorCatch(statusCode, err.message);
     }
 

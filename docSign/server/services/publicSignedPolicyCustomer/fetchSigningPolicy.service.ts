@@ -1,16 +1,28 @@
-import PolicyAssignmentModel from "~~/server/model/policyAssignment.model";
+import { createError } from "h3";
 
-export const getSignedPoliciesByCustomerIdService = async (customerId: string) => {
-  const assignments = await PolicyAssignmentModel.find({
-    customerId,
-    status: "signed",
-  })
-    .populate("policyId")
-    .populate("brokerId")
-    .sort({ signedAt: -1 });
+import PolicyAssignmentModel from
+"~~/server/model/policyAssignment.model";
 
-  return {
-    success: true,
-    assignments,
+export const getPolicyBySigningTokenService =
+  async (token: string) => {
+    const assignment =
+      await PolicyAssignmentModel.findOne({
+        signingToken: token,
+      })
+        .populate("policyId")
+        .populate("customerId")
+        .populate("brokerId");
+
+    if (!assignment) {
+      throw createError({
+        statusCode: 404,
+        statusMessage:
+          "Invalid signing link",
+      });
+    }
+
+    return {
+      success: true,
+      assignment,
+    };
   };
-};

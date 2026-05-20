@@ -1,10 +1,14 @@
+import { ObjectId } from "mongoose";
 import CustomerModel from "~~/server/model/customer.model";
 import type {
   ICreateCustomer,
   IUpdateCustomer,
 } from "~~/server/types/customer.types";
 
-export const createCustomerService = async (body: ICreateCustomer) => {
+export const createCustomerService = async (
+  body: ICreateCustomer,
+  brokerId: string | ObjectId,
+) => {
   const { name, email, phone, address } = body;
 
   const existingCustomer = await CustomerModel.findOne({ email });
@@ -21,6 +25,7 @@ export const createCustomerService = async (body: ICreateCustomer) => {
     email,
     phone,
     address,
+    brokerId: brokerId.toString(),
   });
 
   return {
@@ -30,8 +35,10 @@ export const createCustomerService = async (body: ICreateCustomer) => {
   };
 };
 
-export const getCustomersService = async () => {
-  const customers = await CustomerModel.find().sort({ createdAt: -1 });
+export const getCustomersService = async (brokerId: string | ObjectId) => {
+  const customers = await CustomerModel.find({
+    brokerId: brokerId.toString(),
+  }).sort({ createdAt: -1 });
 
   return {
     success: true,
@@ -39,13 +46,23 @@ export const getCustomersService = async () => {
   };
 };
 
-export const getCustomerByIdService = async (id: string) => {
+export const getCustomerByIdService = async (
+  id: string,
+  brokerId: string | ObjectId,
+) => {
   const customer = await CustomerModel.findById(id);
 
   if (!customer) {
     throw createError({
       statusCode: 404,
       statusMessage: "Customer not found",
+    });
+  }
+
+  if (customer.brokerId.toString() !== brokerId.toString()) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: "Unauthorize access",
     });
   }
 
@@ -57,7 +74,8 @@ export const getCustomerByIdService = async (id: string) => {
 
 export const updateCustomerService = async (
   id: string,
-  body: IUpdateCustomer
+  body: IUpdateCustomer,
+  brokerId: string | ObjectId,
 ) => {
   const customer = await CustomerModel.findByIdAndUpdate(id, body, {
     new: true,
@@ -71,6 +89,13 @@ export const updateCustomerService = async (
     });
   }
 
+  if (customer.brokerId.toString() !== brokerId.toString()) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: "Unauthorize access",
+    });
+  }
+
   return {
     success: true,
     message: "Customer updated successfully",
@@ -78,13 +103,26 @@ export const updateCustomerService = async (
   };
 };
 
-export const deleteCustomerService = async (id: string) => {
-  const customer = await CustomerModel.findByIdAndDelete(id);
+export const deleteCustomerService = async (
+  id: string,
+  brokerId: string | ObjectId,
+) => {
+  const customer = await CustomerModel.findOneAndDelete({
+    _id: id,
+    brokerId: brokerId.toString(),
+  });
 
   if (!customer) {
     throw createError({
       statusCode: 404,
       statusMessage: "Customer not found",
+    });
+  }
+
+  if (customer.brokerId.toString() !== brokerId.toString()) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: "Unauthorize access",
     });
   }
 

@@ -1,13 +1,19 @@
+import { ObjectId } from "mongoose";
 import { getCustomersService } from "~~/server/services/customer/customer.service";
 import { handleErrorCatch } from "~~/server/utils/errorHandler";
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
   try {
-    return await getCustomersService();
+    const brokerId = event.context.broker._id as string | ObjectId;
+
+    return await getCustomersService(brokerId);
+
   } catch (err: unknown) {
     if (err instanceof Error) {
       const statusCode =
-        "statusCode" in err ? Number((err as Error & { statusCode?: number }).statusCode) : 500;
+        "statusCode" in err
+          ? Number((err as Error & { statusCode?: number }).statusCode)
+          : 500;
       return handleErrorCatch(statusCode, err.message);
     }
 

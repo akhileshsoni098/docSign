@@ -1,26 +1,18 @@
 import {
   defineEventHandler,
-  getQuery,
+  getRouterParam,
   readMultipartFormData,
   type MultiPartData,
 } from "h3";
-
-import { updatePolicyService } from "~~/server/services/policy/policy.service";
+import { signPolicyService } from "~~/server/services/publicSignedPolicyCustomer/signedPolicyByCustomer.service";
 
 import { handleErrorCatch } from "~~/server/utils/errorHandler";
 
-import type { IUpdatePolicy } from "~~/server/types/policy.types";
-import { ObjectId } from "mongoose";
-
 export default defineEventHandler(async (event) => {
   try {
-    const id = getQuery(event).id as string;
-
-    const brokerId = event.context.broker._id as string | ObjectId;
+    const token = getRouterParam(event, "token") || "";
 
     const formData = await readMultipartFormData(event);
-
-    const body: Record<string, string> = {};
 
     const files: Record<string, MultiPartData[]> = {};
 
@@ -35,18 +27,16 @@ export default defineEventHandler(async (event) => {
         }
 
         files[item.name]?.push(item);
-      } else {
-        body[item.name] = item.data.toString();
       }
     }
 
-    return await updatePolicyService(
-      id,
-      body as unknown as IUpdatePolicy,
-      brokerId as string | ObjectId,
-      // optional files
-      Object.keys(files).length > 0 ? files : undefined,
-    );
+    const signedFile = files?.signedFile?.[0];
+
+    if (!signedFile) {
+      return handleErrorCatch(400, "Signed file is required");
+    }
+
+    return await signPolicyService(token, signedFile);
   } catch (err: unknown) {
     if (err instanceof Error) {
       const statusCode =

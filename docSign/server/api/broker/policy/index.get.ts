@@ -1,9 +1,12 @@
+import { ObjectId } from "mongoose";
 import { getPoliciesService } from "~~/server/services/policy/policy.service";
 import { handleErrorCatch } from "~~/server/utils/errorHandler";
 
 export default defineEventHandler(async (event) => {
   try {
-    const brokerId = getQuery(event).brokerId as string;
+
+  const brokerId = event.context.broker._id.toString() 
+  
 
     if (!brokerId) {
       return {

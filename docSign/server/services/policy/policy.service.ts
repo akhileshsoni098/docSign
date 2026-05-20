@@ -1,19 +1,55 @@
+import { ObjectId, Types } from "mongoose";
 import PolicyModel from "~~/server/model/policy.model";
 import type {
   ICreatePolicy,
   IUpdatePolicy,
 } from "~~/server/types/policy.types";
+import {
+  deleteSingleFile,
+  uploadSingleFile,
+} from "~~/server/utils/uploadToCloudinary";
 
-export const createPolicyService = async (body: ICreatePolicy) => {
-  const {
-    title,
-    premium,
-    coverage,
-    duration,
-    brokerId,
-    documentUrl,
-    documentPublicId,
-  } = body;
+interface IMultipartFile {
+  data: Buffer;
+  type?: string;
+  filename?: string;
+}
+
+interface IPolicyFiles {
+  document?: IMultipartFile[];
+}
+
+export const createPolicyService = async (
+  body: ICreatePolicy,
+  brokerId: string | Types.ObjectId,
+  files: IPolicyFiles,
+) => {
+  const { title, premium, coverage, duration } = body;
+
+  const pdfFile = files?.document?.[0];
+
+  if (!pdfFile) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Policy PDF is required",
+    });
+  }
+
+  if (pdfFile.type !== "application/pdf") {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Only PDF files are allowed",
+    });
+  }
+
+  const uploadResult = await uploadSingleFile(pdfFile, "policy_pdfs", "raw");
+
+  if (!uploadResult.status || !uploadResult.data) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: uploadResult.message,
+    });
+  }
 
   const policy = await PolicyModel.create({
     title,
@@ -21,8 +57,8 @@ export const createPolicyService = async (body: ICreatePolicy) => {
     coverage,
     duration,
     brokerId,
-    documentUrl,
-    documentPublicId,
+    documentUrl: uploadResult.data.url,
+    documentPublicId: uploadResult.data.filename,
   });
 
   return {
@@ -61,12 +97,11 @@ export const getPolicyByIdService = async (id: string) => {
 
 export const updatePolicyService = async (
   id: string,
-  body: IUpdatePolicy
+  body: IUpdatePolicy,
+  brokerId: string | ObjectId,
+  files?: IPolicyFiles,
 ) => {
-  const policy = await PolicyModel.findByIdAndUpdate(id, body, {
-    new: true,
-    runValidators: true,
-  });
+  const policy = await PolicyModel.findById(id);
 
   if (!policy) {
     throw createError({
@@ -74,16 +109,72 @@ export const updatePolicyService = async (
       statusMessage: "Policy not found",
     });
   }
+
+  if (policy.brokerId.toString() !== brokerId.toString()) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: "Unauthorize Access",
+    });
+  }
+
+  let documentUrl = policy.documentUrl;
+  let documentPublicId = policy.documentPublicId;
+
+  const pdfFile = files?.document?.[0];
+
+  if (pdfFile) {
+    if (pdfFile.type !== "application/pdf") {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "Only PDF files are allowed",
+      });
+    }
+
+    const uploadResult = await uploadSingleFile(pdfFile, "policy_pdfs", "raw");
+
+    if (!uploadResult.status || !uploadResult.data) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: uploadResult.message,
+      });
+    }
+
+    documentUrl = uploadResult.data.url;
+    documentPublicId = uploadResult.data.filename;
+
+    if (policy.documentPublicId) {
+      await deleteSingleFile({
+        filename: policy.documentPublicId,
+        resourceType: "raw",
+      });
+    }
+  }
+
+  const updatedPolicy = await PolicyModel.findByIdAndUpdate(
+    id,
+    {
+      ...body,
+      documentUrl,
+      documentPublicId,
+    },
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
 
   return {
     success: true,
     message: "Policy updated successfully",
-    policy,
+    policy: updatedPolicy,
   };
 };
 
-export const deletePolicyService = async (id: string) => {
-  const policy = await PolicyModel.findByIdAndDelete(id);
+export const deletePolicyService = async (
+  id: string,
+  brokerId: string | ObjectId,
+) => {
+  const policy = await PolicyModel.findById({ _id: id, brokerId: brokerId });
 
   if (!policy) {
     throw createError({
@@ -91,6 +182,15 @@ export const deletePolicyService = async (id: string) => {
       statusMessage: "Policy not found",
     });
   }
+
+  if (policy.documentPublicId) {
+    await deleteSingleFile({
+      filename: policy.documentPublicId,
+      resourceType: "raw",
+    });
+  }
+
+  await PolicyModel.findByIdAndDelete(id);
 
   return {
     success: true,

@@ -24,6 +24,12 @@ const customerSchema = new mongoose.Schema<ICustomer>(
       type: String,
       trim: true,
     },
+
+    brokerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Broker",
+      required: true,
+    },
   },
   { timestamps: true }
 );
