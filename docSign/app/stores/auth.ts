@@ -1,56 +1,57 @@
+import { useApi } from "~/composables/useApi"
+import type { Broker } from "~/types"
+
 export const useAuthStore = defineStore('auth', () => {
-  const token = ref('')
-  const broker = ref(null)
+  const token = ref<string | null>(null)
+  const broker = ref<Broker | null>(null)
+  const isAuthenticated = computed(() => !!token.value)
 
-  const isLoggedIn = computed(() => !!token.value)
-
-  function setAuth(newToken: string, user: any) {
-    token.value = newToken
-    broker.value = user
-
-    if (process.client) {
-      localStorage.setItem('token', newToken)
-      localStorage.setItem('broker', JSON.stringify(user))
-    }
-  }
-
-  function setBroker(user: any) {
-    broker.value = user
-
-    if (process.client) {
-      localStorage.setItem('broker', JSON.stringify(user))
-    }
-  }
-
-  function init() {
-    if (process.client) {
-      token.value = localStorage.getItem('token') || ''
-
-      const savedBroker = localStorage.getItem('broker')
-
-      if (savedBroker) {
-        broker.value = JSON.parse(savedBroker)
+  const login = async (email: string, password: string) => {
+    const api = useApi()
+    const response = await api.post<{ success: boolean; token: string; broker: Broker }>(
+      '/api/public/login',
+      { email, password }
+    )
+    if (response.success) {
+      token.value = response.token
+      broker.value = response.broker
+      if (process.client) {
+        localStorage.setItem('token', response.token)
+        localStorage.setItem('broker', JSON.stringify(response.broker))
       }
     }
+    return response
   }
 
-  function logout() {
-    token.value = ''
-    broker.value = null
+  const register = async (name: string, email: string, password: string) => {
+    const api = useApi()
+    const response = await api.post<{ success: boolean; broker: Broker }>(
+      '/api/public',
+      { name, email, password }
+    )
+    return response
+  }
 
+  const logout = () => {
+    token.value = null
+    broker.value = null
     if (process.client) {
       localStorage.removeItem('token')
       localStorage.removeItem('broker')
     }
+    navigateTo('/login')
   }
 
-  return {
-    token,
-    broker,
-    isLoggedIn,
-    setAuth,
-    setBroker,
-    init,
-    logout
+  const initialize = () => {
+    if (process.client) {
+      const storedToken = localStorage.getItem('token')
+      const storedBroker = localStorage.getItem('broker')
+      if (storedToken && storedBroker) {
+        token.value = storedToken
+        broker.value = JSON.parse(storedBroker)
+      }
+    }
   }
+
+  return { token, broker, isAuthenticated, login, register, logout, initialize }
 })

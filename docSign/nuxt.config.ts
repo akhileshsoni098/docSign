@@ -35,7 +35,7 @@ export default defineNuxtConfig({
     docusignPrivateKey: process.env.DOCUSIGN_PRIVATE_KEY,
 
     public: {
-      appUrl: process.env.NUXT_PUBLIC_API_BASE || "http://localhost:3000",
+      appUrl: "https://doc-sign-puce.vercel.app" ,
     },
   },
 });
