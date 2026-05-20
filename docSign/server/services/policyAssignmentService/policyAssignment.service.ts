@@ -107,7 +107,7 @@ export const getSingleAssignmentService = async (
   return {
     success: true,
     assignment,
-    link: `${config.public.apiBase}/api/public/sign/${assignment.signingToken}`,
+    link: `${config.public.appUrl}/api/public/sign/${assignment.signingToken}`,
   };
 };
 

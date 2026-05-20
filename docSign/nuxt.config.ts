@@ -7,8 +7,14 @@ export default defineNuxtConfig({
   },
   devtools: { enabled: true },
 
-  modules: ["@nuxtjs/tailwindcss"],
-
+  modules: ["@nuxtjs/tailwindcss", "@pinia/nuxt"],
+  css: ["~/assets/css/main.css"],
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+    },
+  },
   runtimeConfig: {
     jwtSecret: process.env.JWT_SECRET,
     cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME,
@@ -25,26 +31,11 @@ export default defineNuxtConfig({
     docusignBasePath: process.env.DOCUSIGN_BASE_PATH,
 
     docusignAuthServer: process.env.DOCUSIGN_AUTH_SERVER,
-    
-    docusignPrivateKey:process.env.DOCUSIGN_PRIVATE_KEY,
+
+    docusignPrivateKey: process.env.DOCUSIGN_PRIVATE_KEY,
 
     public: {
       appUrl: process.env.NUXT_PUBLIC_API_BASE || "http://localhost:3000",
     },
   },
-
-  //  css: ['~/assets/css/main.css'],
-  //   app: {
-  //     head: {
-  //       title: 'BrokerDesk — Policy Management',
-  //       link: [
-  //         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-  //         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-  //         {
-  //           rel: 'stylesheet',
-  //           href: 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap',
-  //         },
-  //       ],
-  //     },
-  //   },
 });
