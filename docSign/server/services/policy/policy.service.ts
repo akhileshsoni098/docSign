@@ -158,7 +158,7 @@ export const updatePolicyService = async (
       documentPublicId,
     },
     {
-      new: true,
+      returnDocument: 'after',
       runValidators: true,
     },
   );

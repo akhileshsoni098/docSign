@@ -1,5 +1,3 @@
-Bilkul — public routes ko ignore nahi karna chahiye.
-Neeche **Postman-ready endpoint document** de raha hoon, exactly `http://localhost:3000` base URL ke hisaab se.
 
 Aapke models ke hisaab se **Broker** me `password` aur `role` hai, jabki **Customer** model me `password` nahi hai, isliye abhi **customer login/register nahi**, balki **broker customer create karta hai**. Policy aur PolicyAssignment me PDF/document aur signing flow already supported hai.    
 
@@ -214,6 +212,8 @@ POST /api/broker/policy/create
 }
 ```
 
+
+
 ### If PDF upload
 
 Use `form-data` in Postman:
@@ -321,7 +321,7 @@ Authorization: Bearer <token>
 
 # 4) Policy Assignment routes (Broker Protected)
 
-Policy assignment schema me `brokerId`, `customerId`, `policyId`, `status`, `signingToken`, `signedAt`, `signedFileUrl`, `signedFilePublicId` hai. Same broker + same customer + same policy combination unique hona chahiye. 
+Policy assignment schema me `brokerId`, `customerId`, `policyId`, `status`, `signingToken`, `signedAt`, `signedPdfUrl`, `signedFilePublicId` hai. Same broker + same customer + same policy combination unique hona chahiye. 
 
 ---
 
@@ -431,7 +431,7 @@ Use `form-data`
 
 * Signed file upload ho jayega.
 * Backend status `signed` karega.
-* `signedAt`, `signedFileUrl`, `signedFilePublicId` update honge.
+* `signedAt`, `signedPdfUrl`, `signedFilePublicId` update honge.
 
 ---
 

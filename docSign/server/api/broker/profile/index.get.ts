@@ -1,6 +1,7 @@
 export default defineEventHandler(async (event) => {
   try {
     const broker = event.context.broker;
+    console.log(broker)
 
     return {
       success: true,

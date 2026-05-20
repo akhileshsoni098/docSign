@@ -11,7 +11,7 @@ export const getPolicyBySigningTokenService =
       })
         .populate("policyId")
         .populate("customerId")
-        .populate("brokerId");
+        .populate("brokerId","name , email ");
 
     if (!assignment) {
       throw createError({

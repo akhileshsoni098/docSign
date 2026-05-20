@@ -10,8 +10,10 @@ export interface IPolicyAssignment {
   status: AssignmentStatus;
   signingToken: string;
   signedAt?: Date;
-  signedFileUrl?: string;
+  signedPdfUrl?: string;
   signedFilePublicId?: string;
+  docusignEnvelopeId: string;
+  docusignStatus: "created" | "sent" | "completed";
   createdAt?: Date;
   updatedAt?: Date;
 }

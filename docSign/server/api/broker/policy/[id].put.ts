@@ -14,7 +14,7 @@ import { ObjectId } from "mongoose";
 
 export default defineEventHandler(async (event) => {
   try {
-    const id = getQuery(event).id as string;
+    const { id } = event.context.params as { id: string };
 
     const brokerId = event.context.broker._id as string | ObjectId;
 
@@ -39,6 +39,8 @@ export default defineEventHandler(async (event) => {
         body[item.name] = item.data.toString();
       }
     }
+
+
 
     return await updatePolicyService(
       id,

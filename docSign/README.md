@@ -2,40 +2,40 @@
 
 A complete Broker → Customer → Policy → Policy Signing backend system built with:
 
-* Nuxt 3
-* Nitro Server
-* MongoDB
-* Mongoose
-* JWT Authentication
-* Cloudinary File Upload
-* TypeScript
+- Nuxt 3
+- Nitro Server
+- MongoDB
+- Mongoose
+- JWT Authentication
+- Cloudinary File Upload
+- TypeScript
 
 ---
 
 # Features
 
-* Broker Authentication
-* Customer CRUD
-* Policy CRUD
-* Policy Assignment
-* Policy Signing Flow
-* JWT Protected APIs
-* Cloudinary File Upload
-* Clean TypeScript Architecture
-* MongoDB Relations
+- Broker Authentication
+- Customer CRUD
+- Policy CRUD
+- Policy Assignment
+- Policy Signing Flow
+- JWT Protected APIs
+- Cloudinary File Upload
+- Clean TypeScript Architecture
+- MongoDB Relations
 
 ---
 
 # Tech Stack
 
-* Nuxt 3
-* Nitro
-* MongoDB
-* Mongoose
-* TypeScript
-* JWT
-* bcryptjs
-* Cloudinary
+- Nuxt 3
+- Nitro
+- MongoDB
+- Mongoose
+- TypeScript
+- JWT
+- bcryptjs
+- Cloudinary
 
 ---
 
@@ -127,10 +127,10 @@ npm run dev
 # Broker
 
 ```ts
-name
-email
-password
-role
+name;
+email;
+password;
+role;
 ```
 
 ---
@@ -138,10 +138,10 @@ role
 # Customer
 
 ```ts
-name
-email
-phone
-address
+name;
+email;
+phone;
+address;
 ```
 
 ---
@@ -149,13 +149,13 @@ address
 # Policy
 
 ```ts
-title
-premium
-coverage
-duration
-brokerId
-documentUrl
-documentPublicId
+title;
+premium;
+coverage;
+duration;
+brokerId;
+documentUrl;
+documentPublicId;
 ```
 
 ---
@@ -163,13 +163,13 @@ documentPublicId
 # Policy Assignment
 
 ```ts
-brokerId
-customerId
-policyId
-status
-signingToken
-signedFileUrl
-signedFilePublicId
+brokerId;
+customerId;
+policyId;
+status;
+signingToken;
+signedPdfUrl;
+signedFilePublicId;
 ```
 
 ---
@@ -453,8 +453,8 @@ signedFile
 
 Uploaded Files:
 
-* Policy Documents
-* Signed Policy Documents
+- Policy Documents
+- Signed Policy Documents
 
 Stored In:
 
@@ -487,36 +487,36 @@ Public Routes:
 
 Can Have:
 
-* Multiple Policies
-* Multiple Brokers
+- Multiple Policies
+- Multiple Brokers
 
 Therefore:
 
 Customer model DOES NOT contain:
 
 ```ts
-policyId
-brokerId
+policyId;
+brokerId;
 ```
 
 Instead relation stored inside:
 
 ```ts
-PolicyAssignment
+PolicyAssignment;
 ```
 
 ---
 
 # Future Improvements
 
-* Email Sending
-* OTP Verification
-* Real Signature Canvas
-* Audit Logs
-* Admin Dashboard
-* Notification System
-* PDF Generation
-* Role Based Access
+- Email Sending
+- OTP Verification
+- Real Signature Canvas
+- Audit Logs
+- Admin Dashboard
+- Notification System
+- PDF Generation
+- Role Based Access
 
 ---
 
@@ -525,5 +525,3 @@ PolicyAssignment
 Akhilesh Soni
 
 ---
-
-

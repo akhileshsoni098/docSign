@@ -78,7 +78,7 @@ export const updateCustomerService = async (
   brokerId: string | ObjectId,
 ) => {
   const customer = await CustomerModel.findByIdAndUpdate(id, body, {
-    new: true,
+    returnDocument: 'after',
     runValidators: true,
   });
 

@@ -7,7 +7,6 @@ export default defineEventHandler(async (event) => {
     const brokerId = event.context.broker._id as string | ObjectId;
 
     return await getCustomersService(brokerId);
-
   } catch (err: unknown) {
     if (err instanceof Error) {
       const statusCode =

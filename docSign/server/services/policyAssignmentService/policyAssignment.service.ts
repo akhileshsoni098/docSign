@@ -82,12 +82,14 @@ export const getAssignedPoliciesService = async (
   };
 };
 
-// get Single 
+// get Single
 
 export const getSingleAssignmentService = async (
   id: string,
   brokerId: string,
 ) => {
+  const config = useRuntimeConfig();
+
   const assignment = await PolicyAssignmentModel.findOne({
     _id: id,
     brokerId,
@@ -105,9 +107,9 @@ export const getSingleAssignmentService = async (
   return {
     success: true,
     assignment,
+    link: `${config.public.apiBase}/api/public/sign/${assignment.signingToken}`,
   };
 };
- 
 
 // signed policy
 

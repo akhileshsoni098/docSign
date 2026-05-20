@@ -8,6 +8,8 @@ const PUBLIC_ROUTES = [
   "/api/public",
   "/api/broker/auth/login",
   "/api/broker/auth/register",
+  "/api/docusign/test",
+  "/api/docusign/create",
 ];
 
 export default defineEventHandler(async (event) => {

@@ -63,7 +63,7 @@ export const signPolicyService =
     assignment.signedAt =
       new Date();
 
-    assignment.signedFileUrl =
+    assignment.signedPdfUrl =
       uploadResult.data.url;
 
     assignment.signedFilePublicId =

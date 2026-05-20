@@ -11,9 +11,9 @@ export default defineEventHandler(async (event) => {
     if (!body.name || !body.email || !body.phone) {
       return handleError(event, 400, "Provide customer details");
     }
-  const brokerId = event.context.broker._id as string | ObjectId;
+    const brokerId = event.context.broker._id as string | ObjectId;
 
-    return await createCustomerService(body,brokerId);
+    return await createCustomerService(body, brokerId);
   } catch (err: unknown) {
     if (err instanceof Error) {
       const statusCode = (err as HttpErrorWithStatus).statusCode ?? 500;
