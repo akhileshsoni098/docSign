@@ -1,6 +1,5 @@
 <template>
   <div class="app-shell">
-    <!-- ── Sidebar ─────────────────────────────────────────────── -->
     <aside class="sidebar" :class="{ open: sidebarOpen }">
       <div class="sidebar-logo">
         <span class="logo-icon">⚜</span>
@@ -9,7 +8,7 @@
 
       <nav class="sidebar-nav">
         <NuxtLink to="/dashboard" class="nav-item" @click="sidebarOpen = false">
-          <span class="nav-icon">◈</span>
+          <span class="nav-icon">◇</span>
           <span>Dashboard</span>
         </NuxtLink>
         <NuxtLink to="/customers" class="nav-item" @click="sidebarOpen = false">
@@ -37,7 +36,7 @@
         <div class="broker-tag">
           <div class="broker-avatar">{{ initials }}</div>
           <div class="broker-info">
-            <p class="broker-name">{{ auth.brokerName }}</p>
+            <p class="broker-name">{{ auth.brokerName || 'Broker' }}</p>
             <p class="broker-role">Broker</p>
           </div>
         </div>
@@ -47,17 +46,15 @@
       </div>
     </aside>
 
-    <!-- ── Overlay (mobile) ────────────────────────────────────── -->
     <div v-if="sidebarOpen" class="overlay" @click="sidebarOpen = false" />
 
-    <!-- ── Main content ────────────────────────────────────────── -->
     <main class="main-content">
       <header class="topbar">
         <button class="hamburger" @click="sidebarOpen = !sidebarOpen">
           <span /><span /><span />
         </button>
         <div class="topbar-right">
-          <span class="topbar-greeting">Welcome, {{ auth.brokerName }}</span>
+          <span class="topbar-greeting">Welcome, {{ auth.brokerName || 'Broker' }}</span>
         </div>
       </header>
 
@@ -69,13 +66,12 @@
 </template>
 
 <script setup lang="ts">
-import { useAuth } from '~/composables/useAuth'
 import { useAuthStore } from '~/stores/auth'
 
 const auth = useAuthStore()
-auth.init()
+auth.initialize()
 
-const { logout } = useAuth()
+const router = useRouter()
 const sidebarOpen = ref(false)
 
 const initials = computed(() => {
@@ -83,8 +79,9 @@ const initials = computed(() => {
   return name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()
 })
 
-async function handleLogout() {
-  logout()
+function handleLogout() {
+  auth.logout()
+  router.push('/login')
 }
 </script>
 
@@ -93,8 +90,6 @@ async function handleLogout() {
   display: flex;
   min-height: 100vh;
 }
-
-/* ── Sidebar ───────────────────────────────────────────────── */
 .sidebar {
   width: 240px;
   min-height: 100vh;
@@ -106,7 +101,6 @@ async function handleLogout() {
   z-index: 100;
   transition: transform .25s ease;
 }
-
 .sidebar-logo {
   display: flex;
   align-items: center;
@@ -122,9 +116,7 @@ async function handleLogout() {
   color: #fff;
   letter-spacing: .02em;
 }
-
 .sidebar-nav { flex: 1; padding: 1rem .75rem; display: flex; flex-direction: column; gap: .2rem; }
-
 .nav-item {
   display: flex;
   align-items: center;
@@ -141,9 +133,7 @@ async function handleLogout() {
 .nav-item.router-link-active { background: var(--gold); color: var(--navy); font-weight: 600; }
 .nav-item.router-link-active .nav-icon { color: var(--navy); }
 .nav-icon { font-size: 1rem; color: rgba(255,255,255,.4); }
-
 .nav-divider { height: 1px; background: rgba(255,255,255,.1); margin: .75rem 0; }
-
 .sidebar-footer {
   padding: 1rem 1.25rem 1.5rem;
   border-top: 1px solid rgba(255,255,255,.1);
@@ -165,8 +155,6 @@ async function handleLogout() {
 .broker-role { color: rgba(255,255,255,.4); font-size: .75rem; }
 .logout-btn { width: 100%; justify-content: center; color: rgba(255,255,255,.6); border-color: rgba(255,255,255,.2); }
 .logout-btn:hover { color: #fff; border-color: rgba(255,255,255,.5); background: rgba(255,255,255,.05); }
-
-/* ── Main ──────────────────────────────────────────────────── */
 .main-content {
   margin-left: 240px;
   flex: 1;
@@ -174,7 +162,6 @@ async function handleLogout() {
   flex-direction: column;
   min-height: 100vh;
 }
-
 .topbar {
   height: 60px;
   background: var(--surface-2);
@@ -186,7 +173,6 @@ async function handleLogout() {
   position: sticky; top: 0; z-index: 50;
 }
 .topbar-greeting { font-size: .9rem; color: var(--text-muted); }
-
 .hamburger {
   display: none;
   flex-direction: column;
@@ -197,16 +183,12 @@ async function handleLogout() {
   padding: .25rem;
 }
 .hamburger span { display: block; width: 22px; height: 2px; background: var(--text-primary); border-radius: 2px; }
-
 .page-area { flex: 1; padding: 2rem 1.5rem; }
-
-/* ── Overlay (mobile) ─────────────────────────────────────── */
 .overlay {
   position: fixed; inset: 0;
   background: rgba(0,0,0,.45);
   z-index: 99;
 }
-
 @media (max-width: 768px) {
   .sidebar { transform: translateX(-100%); }
   .sidebar.open { transform: translateX(0); }

@@ -1,4 +1,5 @@
-import { ObjectId, Types } from "mongoose";
+import { Types } from "mongoose";
+import type { ObjectId } from "mongoose";
 import PolicyModel from "~~/server/model/policy.model";
 import type {
   ICreatePolicy,

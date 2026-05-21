@@ -4,9 +4,9 @@ import { useAuthStore } from '~/stores/auth'
 const auth = useAuthStore()
 
 onMounted(async () => {
-  auth.init()
+  auth.initialize()
 
-  if (auth.isLoggedIn) {
+  if (auth.isAuthenticated) {
     await navigateTo('/dashboard')
   } else {
     await navigateTo('/login')

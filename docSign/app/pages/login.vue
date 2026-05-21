@@ -1,38 +1,59 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50">
-    <div class="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-      <h2 class="text-3xl font-bold text-center">Broker Login</h2>
-      <form @submit.prevent="handleLogin" class="space-y-6">
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Email</label>
-          <input v-model="email" type="email" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Password</label>
-          <input v-model="password" type="password" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
-        </div>
-        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">
-          Login
-        </button>
-      </form>
-      <p class="text-center">Don't have an account? <NuxtLink to="/register" class="text-blue-600">Register</NuxtLink></p>
-    </div>
-  </div>
+  <NuxtLayout name="auth">
+    <h2 style="margin-bottom:.25rem">Welcome Back</h2>
+    <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:1.5rem">Sign in to your broker account</p>
+
+    <div v-if="error" class="alert alert-error">{{ error }}</div>
+
+    <form @submit.prevent="handleLogin">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" v-model="email" type="email" placeholder="broker@example.com" required />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input id="password" v-model="password" type="password" placeholder="Enter your password" required />
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-lg" :disabled="loading" style="width:100%;justify-content:center;margin-top:.5rem">
+        <span v-if="loading">Signing in…</span>
+        <span v-else>Sign In</span>
+      </button>
+    </form>
+
+    <div class="divider" />
+    <p style="text-align:center;font-size:.88rem;color:var(--text-muted)">
+      Don't have an account?
+      <NuxtLink to="/register" style="color:var(--navy);font-weight:600">Create Account</NuxtLink>
+    </p>
+  </NuxtLayout>
 </template>
 
 <script setup lang="ts">
+import { useAuthStore } from '~/stores/auth'
+
+definePageMeta({ layout: false })
+
 const email = ref('')
 const password = ref('')
+const loading = ref(false)
+const error = ref('')
 const authStore = useAuthStore()
 const { show } = useToast()
 
 const handleLogin = async () => {
+  error.value = ''
+  loading.value = true
   try {
     await authStore.login(email.value, password.value)
     show('Login successful!', 'success')
-    await navigateTo('/broker/dashboard')
-  } catch (error: any) {
-    show(error.message, 'error')
+    await navigateTo('/dashboard')
+  } catch (e: any) {
+    error.value = e.message
+    show(e.message, 'error')
+  } finally {
+    loading.value = false
   }
 }
 </script>

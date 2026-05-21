@@ -43,21 +43,9 @@
             </tbody>
           </table>
         </div>
-
-        <div class="pagination">
-          <button :disabled="page === 1" @click="changePage(page - 1)">← Prev</button>
-          <button
-            v-for="p in totalPages"
-            :key="p"
-            :class="{ active: p === page }"
-            @click="changePage(p)"
-          >{{ p }}</button>
-          <button :disabled="page === totalPages" @click="changePage(page + 1)">Next →</button>
-        </div>
       </template>
     </div>
 
-    <!-- Delete Confirm Modal -->
     <Teleport to="body">
       <div v-if="deleteTarget" class="modal-overlay" @click.self="deleteTarget = null">
         <div class="modal card">
@@ -81,30 +69,25 @@
 import { useCustomer } from '~/composables/useCustomer'
 
 definePageMeta({
-  layout: 'default',
-  middleware: 'auth'
+  layout: 'default'
 })
 
 const { getCustomers, deleteCustomer } = useCustomer()
 
-const customers  = ref<any[]>([])
-const page       = ref(1)
-const limit      = ref(10)
-const total      = ref(0)
-const loading    = ref(true)
-const error      = ref('')
+const customers   = ref<any[]>([])
+const page        = ref(1)
+const limit       = ref(10)
+const loading     = ref(true)
+const error       = ref('')
 const deleteTarget = ref<any>(null)
-const deleting   = ref(false)
-
-const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit.value)))
+const deleting    = ref(false)
 
 async function fetchCustomers() {
   loading.value = true
   error.value = ''
   try {
     const data = await getCustomers(page.value, limit.value)
-    customers.value = data.customers || data.data || []
-    total.value     = data.total || data.pagination?.total || customers.value.length
+    customers.value = data.customers || []
   } catch (e: any) {
     error.value = e.message
   } finally {

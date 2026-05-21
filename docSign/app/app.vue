@@ -1,19 +1,11 @@
 <template>
   <div>
-    <AppHeader v-if="authStore.isAuthenticated" />
-    <div class="flex">
-      <AppSidebar v-if="authStore.isAuthenticated" />
-      <main class="flex-1 p-6 bg-gray-100 min-h-screen">
-        <NuxtPage />
-      </main>
-    </div>
-    <div v-if="toast" class="fixed bottom-4 right-4 z-50">
-      <div :class="{
-        'bg-green-500': toast.type === 'success',
-        'bg-red-500': toast.type === 'error',
-        'bg-blue-500': toast.type === 'info',
-      }" class="text-white px-6 py-3 rounded-lg shadow-lg">
-        {{ toast.message }}
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
+    <div v-for="t in toasts" :key="t.id" class="toast-container">
+      <div :class="['toast-item', `toast-${t.type}`]">
+        {{ t.message }}
       </div>
     </div>
   </div>
@@ -21,6 +13,35 @@
 
 <script setup lang="ts">
 const authStore = useAuthStore()
-const { toast } = useToast()
 authStore.initialize()
+
+const { toasts } = useToast()
 </script>
+
+<style>
+.toast-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.toast-item {
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  animation: slideIn 0.2s ease;
+}
+.toast-success { background: #2E9E6B; }
+.toast-error { background: #E04545; }
+.toast-info { background: #0B1437; }
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+</style>

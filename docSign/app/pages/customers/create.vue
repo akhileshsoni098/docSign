@@ -46,8 +46,7 @@
 import { useCustomer } from '~/composables/useCustomer'
 
 definePageMeta({
-  layout: 'default',
-  middleware: 'auth'
+  layout: 'default'
 })
 
 const { createCustomer } = useCustomer()

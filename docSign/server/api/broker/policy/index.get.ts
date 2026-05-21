@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose";
+import type { ObjectId } from "mongoose";
 import { getPoliciesService } from "~~/server/services/policy/policy.service";
 import { handleErrorCatch } from "~~/server/utils/errorHandler";
 

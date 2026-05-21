@@ -48,12 +48,6 @@
             </tbody>
           </table>
         </div>
-
-        <div class="pagination">
-          <button :disabled="page === 1" @click="changePage(page - 1)">← Prev</button>
-          <button v-for="p in totalPages" :key="p" :class="{ active: p === page }" @click="changePage(p)">{{ p }}</button>
-          <button :disabled="page === totalPages" @click="changePage(page + 1)">Next →</button>
-        </div>
       </template>
     </div>
 
@@ -76,30 +70,25 @@
 import { usePolicy } from '~/composables/usePolicy'
 
 definePageMeta({
-  layout: 'default',
-  middleware: 'auth'
+  layout: 'default'
 })
 
 const { getPolicies, deletePolicy } = usePolicy()
 
-const policies    = ref<any[]>([])
-const page        = ref(1)
-const limit       = ref(10)
-const total       = ref(0)
-const loading     = ref(true)
-const error       = ref('')
+const policies     = ref<any[]>([])
+const page         = ref(1)
+const limit        = ref(10)
+const loading      = ref(true)
+const error        = ref('')
 const deleteTarget = ref<any>(null)
-const deleting    = ref(false)
-
-const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit.value)))
+const deleting     = ref(false)
 
 async function fetchPolicies() {
   loading.value = true
   error.value = ''
   try {
     const data = await getPolicies(page.value, limit.value)
-    policies.value = data.policies || data.data || []
-    total.value    = data.total || data.pagination?.total || policies.value.length
+    policies.value = data.policies || []
   } catch (e: any) {
     error.value = e.message
   } finally {

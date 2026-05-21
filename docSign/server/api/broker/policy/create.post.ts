@@ -3,7 +3,7 @@ import { defineEventHandler, readMultipartFormData } from "h3";
 import { createPolicyService } from "~~/server/services/policy/policy.service";
 import { handleError, handleErrorCatch } from "~~/server/utils/errorHandler";
 import type { ICreatePolicy } from "~~/server/types/policy.types";
-import { IBroker, IResBroker } from "~~/server/types/brokerProfileTypes";
+import type { IBroker, IResBroker } from "~~/server/types/brokerProfileTypes";
 import type { MultiPartData } from "h3";
 
 export default defineEventHandler(async (event) => {

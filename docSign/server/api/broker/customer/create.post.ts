@@ -2,7 +2,7 @@ import { createCustomerService } from "~~/server/services/customer/customer.serv
 import { handleError, handleErrorCatch } from "~~/server/utils/errorHandler";
 import type { ICreateCustomer } from "~~/server/types/customer.types";
 import type { HttpErrorWithStatus } from "~~/server/utils/http-error";
-import { ObjectId } from "mongoose";
+import type { ObjectId } from "mongoose";
 
 export default defineEventHandler(async (event) => {
   try {

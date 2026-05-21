@@ -17,9 +17,13 @@
           <button class="btn btn-gold btn-sm" @click="copyLink">📋 Copy</button>
         </div>
         <p style="font-size:.82rem;color:var(--text-muted);margin-top:.5rem">Customer will use this link to sign the document.</p>
-        <div style="display:flex;gap:.75rem;margin-top:1rem">
+        <div style="display:flex;gap:.75rem;margin-top:1rem;flex-wrap:wrap">
+          <a v-if="whatsAppUrl" :href="whatsAppUrl" target="_blank" class="btn btn-success btn-sm">
+            💬 Share on WhatsApp
+          </a>
+          <button class="btn btn-outline btn-sm" @click="copyLink">📋 Copy Link</button>
           <NuxtLink to="/assignments" class="btn btn-outline btn-sm">View All Assignments</NuxtLink>
-          <NuxtLink :to="`/sign/${signToken}`" target="_blank" class="btn btn-primary btn-sm">Open Sign Page ↗</NuxtLink>
+          <a :href="`/api/public/sign/${signToken}`" target="_blank" class="btn btn-primary btn-sm">Open DocuSign ↗</a>
         </div>
       </div>
 
@@ -71,8 +75,7 @@ import { useCustomer } from '~/composables/useCustomer'
 import { usePolicy } from '~/composables/usePolicy'
 
 definePageMeta({
-  layout: 'default',
-  middleware: 'auth'
+  layout: 'default'
 })
 
 const { createAssignment } = useAssignment()
@@ -93,22 +96,33 @@ const signToken        = ref('')
 
 const signLinkUrl = computed(() => {
   const base = config.public.appUrl || (process.client ? window.location.origin : '')
-  return `${base}/sign/${signToken.value}`
+  return `${base}/api/public/sign/${signToken.value}`
 })
 
 const selectedCustomer = computed(() => customers.value.find(c => c._id === form.customerId))
 const selectedPolicy   = computed(() => policies.value.find(p => p._id === form.policyId))
 
+const whatsAppUrl = computed(() => {
+  const phone = selectedCustomer.value?.phone
+  if (!phone || !signToken.value) return ''
+  const digits = phone.replace(/\D/g, '')
+  if (!digits) return ''
+  const msg = encodeURIComponent(
+    `Hi ${selectedCustomer.value.name}, please sign your policy document using this link: ${signLinkUrl.value}`
+  )
+  return `https://wa.me/${digits}?text=${msg}`
+})
+
 // Load dropdowns
 onMounted(async () => {
   try {
     const cd = await getCustomers(1, 100)
-    customers.value = cd.customers || cd.data || []
+    customers.value = cd.customers || []
   } finally { customersLoading.value = false }
 
   try {
     const pd = await getPolicies(1, 100)
-    policies.value = pd.policies || pd.data || []
+    policies.value = pd.policies || []
   } finally { policiesLoading.value = false }
 })
 

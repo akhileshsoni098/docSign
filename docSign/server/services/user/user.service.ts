@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import BrokerModel from "~~/server/model/broker.model";
-import { IBroker } from "~~/server/types/brokerProfileTypes";
+import type { IBroker } from "~~/server/types/brokerProfileTypes";
 import { generateToken } from "./auth.service";
 
 //================ BROKER REGISTER SERVICE =================

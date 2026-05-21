@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose";
+import type { ObjectId } from "mongoose";
 import { getCustomerByIdService } from "~~/server/services/customer/customer.service";
 import { handleErrorCatch } from "~~/server/utils/errorHandler";
 

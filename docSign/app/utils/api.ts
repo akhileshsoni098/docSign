@@ -6,7 +6,6 @@ export const useApiFetch = () => {
     if (process.client) {
       return localStorage.getItem('token') || ''
     }
-
     return ''
   }
 
@@ -14,15 +13,11 @@ export const useApiFetch = () => {
     path: string,
     options: RequestInit = {}
   ): Promise<T> {
-
     const isFormData = options.body instanceof FormData
 
     const headers: Record<string, string> = {
       Authorization: `Bearer ${getToken()}`,
-      ...(isFormData
-        ? {}
-        : { 'Content-Type': 'application/json' }),
-
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...((options.headers as Record<string, string>) || {})
     }
 
@@ -32,7 +27,6 @@ export const useApiFetch = () => {
     })
 
     const ct = res.headers.get('content-type') || ''
-
     const data = ct.includes('application/json')
       ? await res.json()
       : await res.text()
@@ -47,8 +41,5 @@ export const useApiFetch = () => {
     return data as T
   }
 
-  return {
-    apiFetch,
-    BASE
-  }
+  return { apiFetch, BASE }
 }

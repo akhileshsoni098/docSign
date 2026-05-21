@@ -36,7 +36,7 @@ export default defineNuxtConfig({
 
     public: {
       appUrl: "https://doc-sign-puce.vercel.app" ,
-      // appUrl: " http://localhost:3000",
+      // appUrl: "http://localhost:3000",
     },
   },
 });

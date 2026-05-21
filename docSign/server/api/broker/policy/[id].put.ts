@@ -10,7 +10,7 @@ import { updatePolicyService } from "~~/server/services/policy/policy.service";
 import { handleErrorCatch } from "~~/server/utils/errorHandler";
 
 import type { IUpdatePolicy } from "~~/server/types/policy.types";
-import { ObjectId } from "mongoose";
+import type { ObjectId } from "mongoose";
 
 export default defineEventHandler(async (event) => {
   try {

@@ -64,8 +64,7 @@
 import { usePolicy } from '~/composables/usePolicy'
 
 definePageMeta({
-  layout: 'default',
-  middleware: 'auth'
+  layout: 'default'
 })
 
 const { createPolicy } = usePolicy()

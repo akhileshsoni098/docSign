@@ -1,39 +1,10 @@
-/* import { defineEventHandler, getRouterParam } from "h3";
-import { getPolicyBySigningTokenService } from "~~/server/services/publicSignedPolicyCustomer/fetchSigningPolicy.service";
-
-import { handleErrorCatch } from "~~/server/utils/errorHandler";
-
-export default defineEventHandler(async (event) => {
-  try {
-    const token = getRouterParam(event, "token") || "";
-
-    return await getPolicyBySigningTokenService(token);
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-      const statusCode =
-        "statusCode" in err
-          ? Number(
-              (
-                err as Error & {
-                  statusCode?: number;
-                }
-              ).statusCode,
-            )
-          : 500;
-
-      return handleErrorCatch(statusCode, err.message);
-    }
-
-    return handleErrorCatch(500, "Internal Server Error");
-  }
-});
- */
-
 import {
   defineEventHandler,
   getRouterParam,
   sendRedirect,
 } from "h3";
+
+import PolicyAssignmentModel from "~~/server/model/policyAssignment.model";
 
 import {
   startSigningService,
@@ -48,6 +19,16 @@ export default defineEventHandler(
         event,
         "token"
       ) || "";
+
+    const assignment = await PolicyAssignmentModel.findOne({ signingToken: token });
+
+    if (assignment?.status === "signed") {
+      const config = useRuntimeConfig();
+      const url = assignment.signedPdfUrl
+        ? `${config.public.appUrl}/sign/${token}?status=completed&url=${encodeURIComponent(assignment.signedPdfUrl)}`
+        : `${config.public.appUrl}/sign/${token}?status=completed`;
+      return sendRedirect(event, url);
+    }
 
     const result =
       await startSigningService(

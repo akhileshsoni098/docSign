@@ -1,16 +1,17 @@
-import { useApi } from "~/composables/useApi"
+import { useApiFetch } from "~/utils/api"
 import type { Broker } from "~/types"
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(null)
   const broker = ref<Broker | null>(null)
   const isAuthenticated = computed(() => !!token.value)
+  const brokerName = computed(() => broker.value?.name || '')
 
   const login = async (email: string, password: string) => {
-    const api = useApi()
-    const response = await api.post<{ success: boolean; token: string; broker: Broker }>(
+    const { apiFetch } = useApiFetch()
+    const response = await apiFetch<{ success: boolean; token: string; broker: Broker }>(
       '/api/public/login',
-      { email, password }
+      { method: 'POST', body: JSON.stringify({ email, password }) }
     )
     if (response.success) {
       token.value = response.token
@@ -24,12 +25,21 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const register = async (name: string, email: string, password: string) => {
-    const api = useApi()
-    const response = await api.post<{ success: boolean; broker: Broker }>(
+    const { apiFetch } = useApiFetch()
+    const response = await apiFetch<{ success: boolean; message: string; token?: string; broker?: Broker }>(
       '/api/public',
-      { name, email, password }
+      { method: 'POST', body: JSON.stringify({ name, email, password }) }
     )
     return response
+  }
+
+  const setAuth = (newToken: string, newBroker: Broker) => {
+    token.value = newToken
+    broker.value = newBroker
+    if (process.client) {
+      localStorage.setItem('token', newToken)
+      localStorage.setItem('broker', JSON.stringify(newBroker))
+    }
   }
 
   const logout = () => {
@@ -39,7 +49,6 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.removeItem('token')
       localStorage.removeItem('broker')
     }
-    navigateTo('/login')
   }
 
   const initialize = () => {
@@ -53,5 +62,5 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  return { token, broker, isAuthenticated, login, register, logout, initialize }
+  return { token, broker, isAuthenticated, brokerName, login, register, setAuth, logout, initialize }
 })

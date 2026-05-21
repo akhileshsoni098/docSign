@@ -12,6 +12,8 @@ export interface Customer {
   phone: string
   address: string
   brokerId?: string
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface Policy {
@@ -23,6 +25,8 @@ export interface Policy {
   brokerId: string
   documentUrl?: string
   documentPublicId?: string
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface Assignment {
@@ -34,6 +38,17 @@ export interface Assignment {
   signingToken: string
   signedPdfUrl?: string
   signedFilePublicId?: string
+  docusignEnvelopeId?: string
+  docusignStatus?: string
+  signedAt?: string
   createdAt: string
   updatedAt: string
+}
+
+export interface DashboardStats {
+  totalCustomers: number
+  totalPolicies: number
+  pendingAssignments: number
+  signedAssignments: number
+  recentAssignments: Assignment[]
 }

@@ -1,6 +1,5 @@
 <template>
   <div class="sign-shell">
-    <!-- Header -->
     <header class="sign-header">
       <span class="brand-icon">⚜</span>
       <span class="brand-name">BrokerDesk</span>
@@ -20,24 +19,39 @@
         <p>{{ fetchError }}</p>
       </div>
 
-      <!-- Already signed -->
+      <!-- Already signed from query param (returnUrl after DocuSign) -->
+      <div v-else-if="signedFromRedirect" class="sign-card card success-state">
+        <div class="success-icon">✓</div>
+        <h2>Document Signed Successfully!</h2>
+        <p>Your document has been signed and verified.</p>
+        <a v-if="signedPdfUrl" :href="signedPdfUrl" target="_blank" class="btn btn-outline" style="margin-top:1rem">
+          Download Signed Copy ↗
+        </a>
+        <div style="margin-top:1rem;display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap">
+          <NuxtLink to="/dashboard" class="btn btn-gold">Go to Dashboard →</NuxtLink>
+        </div>
+      </div>
+
+      <!-- Already signed (fetched from DB) -->
       <div v-else-if="assignment.status === 'signed'" class="sign-card card success-state">
         <div class="success-icon">✓</div>
         <h2>Document Signed</h2>
         <p>This document was signed on <strong>{{ formatDate(assignment.signedAt) }}</strong>.</p>
-        <a v-if="assignment.signedFileUrl" :href="assignment.signedFileUrl" target="_blank" class="btn btn-outline" style="margin-top:1rem">
+        <a v-if="assignment.signedPdfUrl" :href="assignment.signedPdfUrl" target="_blank" class="btn btn-outline" style="margin-top:1rem">
           Download Signed Copy ↗
         </a>
+        <div style="margin-top:1rem;display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap">
+          <NuxtLink to="/dashboard" class="btn btn-gold">Go to Dashboard →</NuxtLink>
+        </div>
       </div>
 
-      <!-- Sign form -->
+      <!-- Sign form (manual upload) -->
       <div v-else class="sign-card card">
         <div class="sign-intro">
           <h2>Sign Policy Document</h2>
           <p class="sign-sub">Please review the policy details and upload your signed document.</p>
         </div>
 
-        <!-- Policy details -->
         <div class="policy-details">
           <h3 style="margin-bottom:.75rem">Policy Details</h3>
           <div class="detail-row">
@@ -62,7 +76,6 @@
           </div>
         </div>
 
-        <!-- Original policy doc -->
         <div v-if="assignment.policyId?.documentUrl" style="margin-top:1rem">
           <a :href="assignment.policyId.documentUrl" target="_blank" class="btn btn-outline">
             📄 View Policy Document
@@ -72,7 +85,6 @@
 
         <div class="divider" />
 
-        <!-- Upload signed file -->
         <div v-if="!submitSuccess">
           <div v-if="submitError" class="alert alert-error">{{ submitError }}</div>
 
@@ -106,11 +118,11 @@
           </p>
         </div>
 
-        <!-- Submit success -->
         <div v-else class="success-state" style="text-align:center;padding:1.5rem 0">
           <div class="success-icon">✓</div>
           <h3 style="margin-top:.75rem">Document Submitted!</h3>
           <p style="color:var(--text-muted);margin-top:.5rem">Your signed document has been received. The broker will verify and confirm your policy.</p>
+          <NuxtLink to="/dashboard" class="btn btn-gold" style="margin-top:1.25rem">Go to Dashboard →</NuxtLink>
         </div>
       </div>
     </main>
@@ -120,29 +132,31 @@
 <script setup lang="ts">
 import { useSign } from '~/composables/useSign'
 
-// This page is PUBLIC — no auth middleware
 definePageMeta({ layout: false })
 
 const route = useRoute()
 const token = route.params.token as string
 
-const { getSigningDetail, submitSignedFile } = useSign()
+const { getAssignment, submitSignedFile } = useSign()
 
-const assignment   = ref<any>({})
-const loading      = ref(true)
-const fetchError   = ref('')
-const submitError  = ref('')
-const submitting   = ref(false)
-const submitSuccess = ref(false)
+const assignment      = ref<any>({})
+const loading         = ref(true)
+const fetchError      = ref('')
+const submitError     = ref('')
+const submitting      = ref(false)
+const submitSuccess   = ref(false)
 
-const signedFile = ref<File | null>(null)
-const fileInput  = ref<HTMLInputElement | null>(null)
-const isDragging = ref(false)
+const signedFile  = ref<File | null>(null)
+const fileInput   = ref<HTMLInputElement | null>(null)
+const isDragging  = ref(false)
 
-// Load assignment via public token
+// Check if redirected from DocuSign via returnUrl
+const signedFromRedirect = computed(() => route.query.status === 'completed')
+const signedPdfUrl       = computed(() => route.query.url as string || '')
+
 onMounted(async () => {
   try {
-    const data = await getSigningDetail(token)
+    const data = await getAssignment(token)
     assignment.value = data.assignment || data
   } catch (e: any) {
     fetchError.value = e.message

@@ -104,6 +104,16 @@ h3 { font-size: 1.2rem; font-weight: 600; }
 }
 .btn-danger:hover:not(:disabled) { background: #FEE2E2; }
 
+.btn-success {
+  background: #25D366;
+  color: #fff;
+  border: 1px solid #25D366;
+}
+.btn-success:hover:not(:disabled) {
+  background: #1DA851;
+  transform: translateY(-1px);
+}
+
 .btn-sm { padding: .4rem .9rem; font-size: .82rem; }
 .btn-lg { padding: .8rem 2rem; font-size: 1rem; }
 

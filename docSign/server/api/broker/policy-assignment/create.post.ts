@@ -1,6 +1,6 @@
 import { defineEventHandler, readBody } from "h3";
 import { createPolicyAssignmentService } from "~~/server/services/policyAssignmentService/policyAssignment.service";
-import { IResBroker } from "~~/server/types/brokerProfileTypes";
+import type { IResBroker } from "~~/server/types/brokerProfileTypes";
 
 import { handleErrorCatch } from "~~/server/utils/errorHandler";
 

@@ -1,5 +1,5 @@
-import mongoose, { Model } from "mongoose";
-import { IBroker } from "../types/brokerProfileTypes";
+import mongoose from "mongoose";
+import type { IBroker } from "../types/brokerProfileTypes";
 
 const brokerProfileSchema = new mongoose.Schema<IBroker>(
   {

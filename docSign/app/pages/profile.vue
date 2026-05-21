@@ -10,7 +10,7 @@
       <div class="card profile-card">
         <div class="avatar-circle">{{ initials }}</div>
         <h2 style="margin-top:1rem">{{ profile.name }}</h2>
-        <span class="badge badge-signed" style="margin-top:.5rem">{{ profile.role }}</span>
+        <span class="badge badge-signed" style="margin-top:.5rem">{{ profile.role || 'Broker' }}</span>
 
         <div class="divider" />
 
@@ -28,15 +28,14 @@
 </template>
 
 <script setup lang="ts">
-import { useAuth } from '~/composables/useAuth'
+import { useApiFetch } from '~/utils/api'
 import { useAuthStore } from '~/stores/auth'
 
 definePageMeta({
-  layout: 'default',
-  middleware: 'auth'
+  layout: 'default'
 })
 
-const { getProfile } = useAuth()
+const { apiFetch } = useApiFetch()
 const auth = useAuthStore()
 
 const loading = ref(true)
@@ -50,7 +49,7 @@ const initials = computed(() => {
 async function fetchProfile() {
   loading.value = true
   try {
-    const data = await getProfile()
+    const data = await apiFetch('/api/broker/profile')
     profile.value = data.broker || data.user || data
   } catch (_) {
     profile.value = auth.broker || {}

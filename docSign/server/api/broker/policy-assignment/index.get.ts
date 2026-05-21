@@ -3,7 +3,7 @@ import {
   getQuery,
 } from "h3";
 import { getAssignedPoliciesService } from "~~/server/services/policyAssignmentService/policyAssignment.service";
-import { IResBroker } from "~~/server/types/brokerProfileTypes";
+import type { IResBroker } from "~~/server/types/brokerProfileTypes";
 
 
 

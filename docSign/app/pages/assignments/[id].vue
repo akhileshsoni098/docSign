@@ -54,9 +54,9 @@
           <a :href="assignment.policyId.documentUrl" target="_blank" class="btn btn-outline btn-sm">View PDF ↗</a>
         </div>
 
-        <div v-if="assignment.signedFileUrl" class="doc-item" style="margin-top:.75rem">
+        <div v-if="assignment.signedPdfUrl" class="doc-item" style="margin-top:.75rem">
           <span class="detail-label">Signed Document</span>
-          <a :href="assignment.signedFileUrl" target="_blank" class="btn btn-outline btn-sm">View Signed ↗</a>
+          <a :href="assignment.signedPdfUrl" target="_blank" class="btn btn-outline btn-sm">View Signed ↗</a>
         </div>
 
         <div class="divider" />
@@ -68,7 +68,7 @@
             <button class="btn btn-gold btn-sm" @click="copyLink">📋 Copy</button>
           </div>
           <div style="margin-top:.75rem;display:flex;gap:.5rem">
-            <NuxtLink :to="`/sign/${assignment.signingToken}`" target="_blank" class="btn btn-primary btn-sm">Open Sign Page ↗</NuxtLink>
+            <a :href="`/api/public/sign/${assignment.signingToken}`" target="_blank" class="btn btn-primary btn-sm">Open DocuSign ↗</a>
           </div>
         </div>
         <div v-else>
@@ -85,8 +85,7 @@
 import { useAssignment } from '~/composables/useAssignment'
 
 definePageMeta({
-  layout: 'default',
-  middleware: 'auth'
+  layout: 'default'
 })
 
 const route = useRoute()
@@ -102,7 +101,7 @@ const copied     = ref(false)
 
 const signLinkUrl = computed(() => {
   const base = config.public.appUrl || (process.client ? window.location.origin : '')
-  return `${base}/sign/${assignment.value.signingToken}`
+  return `${base}/api/public/sign/${assignment.value.signingToken}`
 })
 
 onMounted(async () => {

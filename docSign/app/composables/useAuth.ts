@@ -1,13 +1,11 @@
 import { useAuthStore } from "~/stores/auth";
 import { useApiFetch } from "~/utils/api";
 
-// composables/useAuth.ts
 export const useAuth = () => {
   const { apiFetch } = useApiFetch();
   const auth = useAuthStore();
   const router = useRouter();
 
-  // POST /api/public  → Register broker
   async function register(payload: {
     name: string;
     email: string;
@@ -16,23 +14,16 @@ export const useAuth = () => {
     const data = await apiFetch("/api/public", {
       method: "POST",
       body: JSON.stringify(payload),
-      headers: {
-        "Content-Type": "application/json",
-      },
     });
     return data;
   }
 
-  // POST /api/public/login
   async function login(payload: { email: string; password: string }) {
     const data = await apiFetch<{ token: string; broker?: any; user?: any }>(
       "/api/public/login",
       {
         method: "POST",
         body: JSON.stringify(payload),
-        headers: {
-          "Content-Type": "application/json",
-        },
       },
     );
     const broker = data.broker || data.user;
@@ -40,10 +31,11 @@ export const useAuth = () => {
     return data;
   }
 
-  // GET /api/profile
   async function getProfile() {
-    const data = await apiFetch("/api/profile");
-    auth.setBroker(data.broker || data.user || data);
+    const data = await apiFetch("/api/broker/profile");
+    if (data.broker || data.user || data) {
+      auth.setAuth(data.token || auth.token, data.broker || data.user || data);
+    }
     return data;
   }
 

@@ -57,7 +57,7 @@
           </table>
         </div>
 
-        <div class="pagination">
+        <div v-if="totalPages > 1" class="pagination">
           <button :disabled="page === 1" @click="changePage(page - 1)">← Prev</button>
           <button v-for="p in totalPages" :key="p" :class="{ active: p === page }" @click="changePage(p)">{{ p }}</button>
           <button :disabled="page === totalPages" @click="changePage(page + 1)">Next →</button>
@@ -65,7 +65,6 @@
       </template>
     </div>
 
-    <!-- Copy toast -->
     <div v-if="copied" class="toast">Link copied to clipboard!</div>
   </div>
 </template>
@@ -74,8 +73,7 @@
 import { useAssignment } from '~/composables/useAssignment'
 
 definePageMeta({
-  layout: 'default',
-  middleware: 'auth'
+  layout: 'default'
 })
 
 const { getAssignments } = useAssignment()
@@ -96,8 +94,8 @@ async function fetchAssignments() {
   error.value = ''
   try {
     const data = await getAssignments(page.value, limit.value)
-    assignments.value = data.assignments || data.data || []
-    total.value       = data.total || data.pagination?.total || assignments.value.length
+    assignments.value = data.assignments || []
+    total.value = data.pagination?.total || assignments.value.length
   } catch (e: any) {
     error.value = e.message
   } finally {
@@ -108,9 +106,8 @@ async function fetchAssignments() {
 function changePage(p: number) { page.value = p; fetchAssignments() }
 
 function signLink(token: string) {
-  // Public sign URL for customer
-  const base = config.public.appUrl || window.location.origin
-  return `${base}/sign/${token}`
+  const base = config.public.appUrl || (process.client ? window.location.origin : '')
+  return `${base}/api/public/sign/${token}`
 }
 
 async function copyLink(token: string) {

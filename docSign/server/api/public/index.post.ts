@@ -1,5 +1,5 @@
 import { brokerRegisterService } from "~~/server/services/user/user.service";
-import { IBroker } from "~~/server/types/brokerProfileTypes";
+import type { IBroker } from "~~/server/types/brokerProfileTypes";
 import {
   handleError,
   handleErrorCatch,

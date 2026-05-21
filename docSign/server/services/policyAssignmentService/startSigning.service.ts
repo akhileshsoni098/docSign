@@ -56,8 +56,7 @@ export const startSigningService = async (token: string) => {
 
     documentUrl: policy.documentUrl,
 
-    returnUrl:
-`${config.public.appUrl}/api/public/signed/${token}`,
+    returnUrl: `${config.public.appUrl}/api/public/signed/${token}`,
   });
 
   assignment.docusignEnvelopeId = session.envelopeId;

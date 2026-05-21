@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose";
+import type { ObjectId } from "mongoose";
 import CustomerModel from "~~/server/model/customer.model";
 import type {
   ICreateCustomer,

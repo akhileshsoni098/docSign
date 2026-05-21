@@ -1,6 +1,6 @@
 import { defineEventHandler, getRouterParam } from "h3";
 import { getSingleAssignmentService } from "~~/server/services/policyAssignmentService/policyAssignment.service";
-import { IResBroker } from "~~/server/types/brokerProfileTypes";
+import type { IResBroker } from "~~/server/types/brokerProfileTypes";
 
 import { handleErrorCatch } from "~~/server/utils/errorHandler";
 
